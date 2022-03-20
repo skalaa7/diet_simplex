@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
-#define NUMOFVAR 9
-#define NUMOFSLACK 4
+#define NUMOFVAR 50
+#define NUMOFSLACK 50
 #define ROWSIZE (NUMOFSLACK+1)
 #define COLSIZE (NUMOFSLACK+NUMOFVAR+1)
 
@@ -19,7 +19,7 @@ bool isUnbounded(float wv[ROWSIZE][COLSIZE],int pivotCol)
 {
     for(int j=0;j<ROWSIZE-1;j++)
     {
-        if(wv[j][pivotCol]>=0)
+        if(wv[j][pivotCol]>0)
             return false;
     }
     return true;
@@ -35,6 +35,28 @@ void print(float wv[ROWSIZE][COLSIZE])
             cout<<endl;
         }
         cout<<endl<<endl<<endl;
+}
+void makeMatrix(float wv[ROWSIZE][COLSIZE])
+{
+
+	fstream myFile;
+    myFile.open("baza.txt",ios::in); //otvaram fajl u read modu
+	if(myFile.is_open())
+    {
+        for(int j = 0; j < ROWSIZE; j++)
+        {
+            for(int i = 0; i< NUMOFVAR; i++)
+            {
+              myFile >> wv[j][i];
+            }
+        }
+		for(int j = 0;j< NUMOFSLACK;j++)
+		{
+			myFile >> wv[j][COLSIZE-1];
+		}
+    }
+    myFile.close();
+
 }
 int findPivotCol(float wv[ROWSIZE][COLSIZE])
 {
@@ -65,7 +87,7 @@ int findPivotRow(float wv[ROWSIZE][COLSIZE],int pivotCol)
             }
         }
 
-        float minpozval=rat[0];
+        float minpozval=99999999;
         int loc=0;
         for(int j=0;j<ROWSIZE-1;j++)
         {
@@ -174,6 +196,7 @@ void simplexCalculate(float wv[ROWSIZE][COLSIZE])
         pivot=wv[pivotRow][pivotCol];
 
         doPivoting(wv,pivotRow,pivotCol,pivot);
+        //print(wv);
 
     }
     //Ispisivanje rezultata
@@ -183,7 +206,7 @@ void simplexCalculate(float wv[ROWSIZE][COLSIZE])
     }
     else
     {
-        print(wv);
+        //print(wv);
 
         solutions(wv);
 
@@ -191,26 +214,28 @@ void simplexCalculate(float wv[ROWSIZE][COLSIZE])
 }
 int main()
 {
-    fstream myFile;
-    myFile.open("baza.txt",ios::in); //otvaram fajl u read modu
+
     float wv[ROWSIZE][COLSIZE];
+	for(int j=0;j<ROWSIZE; j++)
+	{
+		for(int i =0;i<COLSIZE;i++)
+		{
+			wv[j][i]=0;
+		}
+	}
 
-    if(myFile.is_open())
-    {
+	makeMatrix(wv);
+	for(int j=0;j<ROWSIZE-1;j++)
+	{
+		{
+			wv[j][NUMOFVAR+j]=1;
+		}
+	}
 
 
-        for(int j = 0; j < ROWSIZE; j++)
-        {
-            for(int i = 0; i< COLSIZE; i++)
-            {
-              myFile >> wv[j][i];
-            }
-        }
-    }
-    myFile.close();
 
 
-    print(wv);
+    //print(wv);
 
     simplexCalculate(wv);
 
