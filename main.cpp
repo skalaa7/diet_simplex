@@ -4,6 +4,8 @@
 #define NUMOFSLACK 50
 #define ROWSIZE (NUMOFSLACK+1)
 #define COLSIZE (NUMOFSLACK+NUMOFVAR+1)
+#define D1 1000
+#define D2 10
 
 using namespace std;
 bool checkOptimality(float wv[ROWSIZE][COLSIZE])
@@ -55,6 +57,15 @@ void makeMatrix(float wv[ROWSIZE][COLSIZE])
 			myFile >> wv[j][COLSIZE-1];
 		}
     }
+	for(int j=0;j<ROWSIZE;j++)
+        {
+                for(int i=0;i<COLSIZE;i++)
+                {
+                        wv[j][i]=wv[j][i]/D2;
+                }
+                wv[j][COLSIZE-1]=wv[j][COLSIZE-1]/D1;
+        }
+
     myFile.close();
 
 }
@@ -122,7 +133,8 @@ void doPivoting(float wv[ROWSIZE][COLSIZE],int pivotRow,int pivotCol,float pivot
             {
                 for(int i=0;i<COLSIZE;i++)
                 {
-                    wv[j][i]=wv[j][i]/pivot;
+                   // wv[j][i]=wv[j][i]/pivot;
+		   wv[j][i]=newRow[i];
                 }
             }
             else
@@ -156,7 +168,7 @@ void solutions(float wv[ROWSIZE][COLSIZE])
 
         if(count0 == ROWSIZE - 2 )
         {
-            cout<<"variable"<<i+1<<": "<<wv[index][COLSIZE-1]<<endl;  //every basic column has the values, get it form B array
+            cout<<"variable"<<i+1<<": "<<D1*wv[index][COLSIZE-1]<<endl;  //every basic column has the values, get it form B array
         }
         else
         {
@@ -165,7 +177,7 @@ void solutions(float wv[ROWSIZE][COLSIZE])
     }
 
     cout<<""<<endl;
-    cout<<endl<<"Optimal solution is "<<wv[ROWSIZE-1][COLSIZE-1]<<endl;
+    cout<<endl<<"Optimal solution is "<<D1*D2*wv[ROWSIZE-1][COLSIZE-1]<<endl;
 }
 void simplexCalculate(float wv[ROWSIZE][COLSIZE])
 {
@@ -225,6 +237,14 @@ int main()
 	}
 
 	makeMatrix(wv);
+	/*for(int j=0;j<ROWSIZE;j++)
+	{
+		for(int i=0;i<COLSIZE;i++)
+		{
+			wv[j][i]=wv[j][i]/D2;
+		}
+		wv[j][COLSIZE-1]=wv[j][COLSIZE-1]/D1;
+	}*/
 	for(int j=0;j<ROWSIZE-1;j++)
 	{
 		{
